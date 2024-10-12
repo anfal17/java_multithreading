@@ -1,4 +1,4 @@
-package Start;
+package Basics;
 //main thread is the first thread
 
 /**
@@ -11,6 +11,9 @@ public class Test {
         //with extends thread
         // HelloThread hello = new HelloThread();
         //hello.start();
+
+        //use runnable whenever a class is already extended and you can only implement it
+        //due to multiple inheritance
 
         //with implements runnable
         HelloThread hello = new HelloThread();
