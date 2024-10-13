@@ -20,6 +20,30 @@
 .lock()    ---> wait until get
 .trylock()  --> wait for soemtime else skip 
 .unlock() 
+.lockInterruptibly()
 
 
 ReentrantLock ??
+--allows to hold same loack again
+
+
+--fair ---> based on waiting of threads
+--unfair locks 
+
+--fairness of locks
+Renetrant(true)
+
+
+Synchronized vs locks
+locks adv-->
+-fairness
+-non blocking
+-Interruptiblity
+-read/write locking
+
+
+--read/write loack
+read multiple
+write single
+
+when write on hold no other reads

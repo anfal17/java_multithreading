@@ -1,0 +1,109 @@
+### What is a **ReentrantLock**?
+
+A **ReentrantLock** is a type of lock provided by the Java `java.util.concurrent.locks` package that allows a thread to repeatedly acquire the same lock it already holds. This is what "reentrant" means: a thread can re-enter the lock if it has already acquired it, without getting blocked.
+
+In simpler terms, a **ReentrantLock** permits the same thread to acquire the lock multiple times without causing a deadlock, as long as the thread releases the lock the same number of times it was acquired. It's a more advanced alternative to using the `synchronized` keyword in Java.
+
+### Why is it called "Reentrant"?
+
+A **reentrant** lock means that:
+- If a thread currently holds the lock, it can acquire the same lock again without blocking.
+- The thread must **release** the lock as many times as it has acquired it before other threads can obtain the lock.
+
+For example, if a method calls itself recursively or another method that also acquires the same lock, a **ReentrantLock** allows this behavior without deadlock.
+
+### **How Does It Work?**
+Imagine two methods: `methodA()` and `methodB()`, both of which are synchronized (or locked) on the same lock. If a thread `T` executes `methodA()`, and inside `methodA()`, it calls `methodB()`, without a reentrant lock, thread `T` would block itself when it tries to acquire the same lock in `methodB()`. However, with a **ReentrantLock**, it can enter `methodB()` because it already holds the lock.
+
+### Example of Reentrancy:
+```java
+import java.util.concurrent.locks.ReentrantLock;
+
+public class ReentrantLockExample {
+    private final ReentrantLock lock = new ReentrantLock();
+
+    public void methodA() {
+        lock.lock();  // Acquiring the lock
+        try {
+            System.out.println("Inside method A");
+            methodB();  // Calling method B which tries to acquire the same lock
+        } finally {
+            lock.unlock();  // Releasing the lock
+        }
+    }
+
+    public void methodB() {
+        lock.lock();  // Acquiring the lock again (re-entrantly)
+        try {
+            System.out.println("Inside method B");
+        } finally {
+            lock.unlock();  // Releasing the lock
+        }
+    }
+
+    public static void main(String[] args) {
+        ReentrantLockExample example = new ReentrantLockExample();
+        example.methodA();
+    }
+}
+```
+
+### Output:
+```
+Inside method A
+Inside method B
+```
+
+Here, `methodA()` acquires the lock, and when `methodB()` is called inside `methodA()`, it can re-acquire the lock without blocking because it is the same thread holding the lock. This is reentrant behavior.
+
+### Key Features of **ReentrantLock**:
+
+1. **Reentrancy**:
+   - If a thread holds the lock, it can acquire it again without blocking.
+   - This is helpful when the same thread enters multiple synchronized blocks or methods that share the same lock.
+
+2. **Explicit Locking and Unlocking**:
+   - With `ReentrantLock`, you must explicitly call `lock()` to acquire the lock and `unlock()` to release it.
+   - This gives you more control over when and how you lock and unlock critical sections.
+
+3. **Fairness Option**:
+   - A `ReentrantLock` can be created with a **fairness policy**.
+   - In a **fair** lock, the longest-waiting thread gets the lock next. This ensures that no thread is starved of the lock.
+   - By default, `ReentrantLock` is **unfair** (i.e., it does not guarantee the order in which threads will get the lock), but you can specify fairness like this:
+     ```java
+     ReentrantLock fairLock = new ReentrantLock(true);  // Fair lock
+     ```
+
+4. **Interruptibility**:
+   - The `ReentrantLock` provides methods like `lockInterruptibly()`, which allows the thread to be interrupted while waiting for the lock.
+   - This feature is not available with `synchronized` blocks, which cannot be interrupted while waiting for a lock.
+
+5. **TryLock**:
+   - As discussed earlier, `ReentrantLock` provides a `tryLock()` method that allows threads to attempt to acquire the lock without blocking indefinitely. It either acquires the lock immediately (if available) or waits for a specified time.
+
+### Comparison: **ReentrantLock vs. `synchronized`**
+
+| Feature             | `ReentrantLock`                           | `synchronized`                |
+|---------------------|-------------------------------------------|-------------------------------|
+| Reentrancy          | Yes                                       | Yes                           |
+| Fairness            | Optionally fair (first-come-first-served) | Always unfair (no fairness)    |
+| Lock Interruptible  | Yes (can be interrupted)                   | No (cannot be interrupted)     |
+| Try Locking         | Yes (non-blocking `tryLock()`)             | No                            |
+| Explicit Locking    | Yes (must call `lock()` and `unlock()`)    | No (automatic, based on scope) |
+| Flexibility         | More flexible (timeouts, fairness, etc.)   | Less flexible (basic locking)  |
+| Performance Overhead| Slightly higher overhead                  | Lower overhead                 |
+
+### When to Use `ReentrantLock` Instead of `synchronized`?
+
+- **Fairness**: When you need to ensure that threads acquire the lock in a specific order (i.e., first-come, first-served), `ReentrantLock` with fairness is ideal.
+- **Interruptible Lock Acquisition**: If you need threads to be interruptible while waiting for a lock, use `ReentrantLock` and its `lockInterruptibly()` method.
+- **Non-blocking Attempts**: When you need the option to try acquiring the lock without waiting, use `tryLock()`.
+- **Fine-Grained Control**: If your application needs more flexibility (e.g., custom unlocking sequences), `ReentrantLock` gives you explicit control over the lock lifecycle.
+
+### Summary:
+
+- **ReentrantLock** allows a thread to **acquire the lock multiple times** if it already holds it, making it useful for handling reentrant code like recursion or nested method calls that share the same lock.
+- It provides **more advanced features** than `synchronized`, such as try-locking, interruptibility, and fairness.
+- However, it comes with more complexity because you need to manage the lock lifecycle manually with `lock()` and `unlock()`.
+
+Let me know if you need further clarification!
