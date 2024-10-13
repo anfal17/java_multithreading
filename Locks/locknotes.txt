@@ -1,0 +1,25 @@
+-->Locks are used to prevent race conttion and maitnain the integrity of the program
+
+-->To handle crirtical sections where multiple processes/threads are working on them
+
+-->mututal exclusion principles
+
+-->two types of Locks
+1.Intrincsic 
+-> built in , automatic , (syncronized keyword)
+
+2.Explicit   
+-> manually control over locking and unlocking,
+ java.util.concurrent.Locks
+
+
+//synchronised allows other threads to access only after a thread has completed execution
+
+
+//using Lock class
+.lock()    ---> wait until get
+.trylock()  --> wait for soemtime else skip 
+.unlock() 
+
+
+ReentrantLock ??

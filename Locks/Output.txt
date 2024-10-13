@@ -1,0 +1,25 @@
+-->before using synchronised on withdraw method
+$ java Locks.Main
+Thread 1 attempting to withdraw 50
+Thread 2 attempting to withdraw 50
+Thread 2 proceeding to withdraw 50
+Thread 1 proceeding to withdraw 50
+Thread 1 completed withdrawal remaining balance 50
+Thread 2 completed withdrawal remaining balance 0
+
+
+---------After synchronized------------
+$ java Locks.Main
+Thread 1 attempting to withdraw 50
+Thread 1 proceeding to withdraw 50
+Thread 1 completed withdrawal remaining balance 50
+Thread 2 attempting to withdraw 50
+Thread 2 proceeding to withdraw 50
+Thread 2 completed withdrawal remaining balance 0
+
+
+//when t1 accessed t2 couldnt access withdraw until t1 completes
+-->even in thread.sleep
+-->but if thread is in timed waiting state indefinitely then its waste of time
+
+-->using explicit locks we can fix this problem
